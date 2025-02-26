@@ -3,21 +3,21 @@ pragma solidity ^0.8.28;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-interface IStandardBridge {
-    function depositETHTo(
-        address _to,
-        uint32 _l2Gas,
-        bytes calldata _data
-    ) external payable;
+interface IL1CrossDomainMessenger {
+    function sendMessage(
+        address target,
+        bytes calldata message,
+        uint32 gasLimit
+    ) external;
 }
 
 contract L1DepositContract is Ownable {
-    address public standardBridgeAddress; // L1StandardBridgeProxyのアドレス
+    address public crossDomainMessengerAddress; // L1CrossDomainMessengerProxyのアドレス
     address public l2ReceiverContractAddress; // L2でERC20トークンを発行するコントラクトのアドレス
 
-    constructor(address initialOwner, address _standardBridgeAddress) 
+    constructor(address initialOwner, address _crossDomainMessengerAddress) 
         Ownable(initialOwner) {
-        standardBridgeAddress = _standardBridgeAddress;
+        crossDomainMessengerAddress = _crossDomainMessengerAddress;
     }
 
     // L1のコントラクトをデプロイ時にL2のコントラクトアドレスが不明なため、後から設定可能とする
@@ -29,20 +29,20 @@ contract L1DepositContract is Ownable {
         require(msg.value > 0, "deposit amount must be greater than 0");
         require(l2ReceiverContractAddress != address(0), "L2 receiver contract address is not set");
 
+        // ブリッジ前に設定値確認用のログ出力
+        emit DepositDetails(crossDomainMessengerAddress, l2ReceiverContractAddress, msg.sender);
+
         // L2のmintTokens関数を呼び出すためのデータエンコード
         bytes memory data = abi.encodeWithSignature(
             "mintTokens(address,uint256)", msg.sender, msg.value
         );
 
-        // ブリッジ前に設定値確認用のログ出力
-        emit DepositDetails(standardBridgeAddress, l2ReceiverContractAddress, msg.sender, msg.value);
-
-        // L1StandardBridgeProxyを経由してブリッジ
-        IStandardBridge(standardBridgeAddress).depositETHTo{ value: msg.value }(
-            l2ReceiverContractAddress,
-            3000000, // L2のガスリミット
-            data
-        );
+        // L1CrossDomainMessengerProxyを経由してL2にメッセージ送信
+        IL1CrossDomainMessenger(crossDomainMessengerAddress).sendMessage({
+            target: l2ReceiverContractAddress,
+            message: data,
+            gasLimit: 2000000 // L2のガスリミット
+        });
 
         emit Deposited(msg.sender, msg.value);
     }
@@ -50,5 +50,5 @@ contract L1DepositContract is Ownable {
     event Deposited(address indexed sender, uint256 amount);
 
     // ログ出力用
-    event DepositDetails(address indexed bridgeAddress, address indexed receiverAddress, address indexed sender, uint256 amount);
+    event DepositDetails(address indexed messengerAddress, address indexed receiverAddress, address indexed sender);
 }

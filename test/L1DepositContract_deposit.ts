@@ -4,7 +4,7 @@ import ABI from "../artifacts/contracts/L1DepositContract.sol/L1DepositContract.
 dotenv.config({ path: '../.env.local' });
 
 // コントラクトアドレス
-const L1DepositContractAddress = "0x28290150389db1a66a756431c7EBc14f6A02b2F7";
+const L1DepositContractAddress = "0x336f5392db27461C29562150600D28cAf653346C";
 
 async function Deposit(_amount: string) {
     const amount = Web3.utils.toWei(_amount, 'ether');

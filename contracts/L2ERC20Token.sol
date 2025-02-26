@@ -20,15 +20,15 @@ contract L2ERC20Token is ERC20 {
     }
 
     function mintTokens(address to, uint256 amount) external {
-        // require(
-        //     msg.sender == l2CrossDomainMessengerAddress,
-        //     "Only the L2 CrossDomainMessenger can trigger minting" // L2のCrossDomainMessengerからのみ呼び出し可能
-        // );
+        require(
+            msg.sender == l2CrossDomainMessengerAddress,
+            "Only the L2 CrossDomainMessenger can trigger minting" // L2のCrossDomainMessengerからのみ呼び出し可能
+        );
 
-        // require(
-        //     IL2CorssDomainMessenger(l2CrossDomainMessengerAddress).xDomainMessageSender() == l1DepositContractAddress,
-        //     "Only the L1 deposit contract can trigger minting" // L1のDepositContractからのみ呼び出し可能
-        // );
+        require(
+            IL2CorssDomainMessenger(l2CrossDomainMessengerAddress).xDomainMessageSender() == l1DepositContractAddress,
+            "Only the L1 deposit contract can trigger minting" // L1のDepositContractからのみ呼び出し可能
+        );
 
         _mint(to, amount);
     }

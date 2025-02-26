@@ -5,7 +5,7 @@ dotenv.config({ path: '../../../.env.local' });
 const L1DepositContractModule = buildModule("L1DepositContractModule", (m) => {
   const L1DepositContract = m.contract("L1DepositContract",[
     process.env.WALLET_ADDRESS as string, // L1DepositContractのowner
-    "0xFBb0621E0B23b5478B630BD55a5f21f67730B0F1" // L1StandardBridgeProxyのアドレス
+    "0x58Cc85b8D04EA49cC6DBd3CbFFd00B4B8D6cb3ef" // L1CrossDomainMessengerProxyのアドレス
   ]);
 
   return { L1DepositContract };

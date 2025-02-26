@@ -4,8 +4,8 @@ import ABI from "../artifacts/contracts/L1DepositContract.sol/L1DepositContract.
 dotenv.config({ path: '../.env.local' });
 
 // コントラクトアドレス
-const L1DepositContractAddress = "0x28290150389db1a66a756431c7EBc14f6A02b2F7";
-const L2ContractAddress = "0xefDbDcb7ab74b49074B30554A10a8e8967eD139f";
+const L1DepositContractAddress = "0x336f5392db27461C29562150600D28cAf653346C";
+const L2ContractAddress = "0x9B716a2Ced7d36BA1de3A1D781C10328E49B61d0";
 
 async function setL2ContractAddress() {
     // RPCのエンドポイントを設定
